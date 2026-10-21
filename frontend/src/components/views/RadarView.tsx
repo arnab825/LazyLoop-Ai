@@ -21,8 +21,23 @@ export function RadarView({ radarReport, radarScanning, onRefresh, onAutomate }:
           </p>
         </div>
 
-        <button className="brutal-btn-primary" onClick={onRefresh} disabled={radarScanning}>
-          <RefreshCw size={16} className={radarScanning ? "animate-spin" : ""} /> RESCAN WORKSPACE
+        <button
+          className="brutal-btn-primary"
+          style={{
+            padding: "6px 14px",
+            fontSize: "11px",
+            letterSpacing: "0.5px",
+            whiteSpace: "nowrap",
+            height: "36px",
+            flexShrink: 0,
+            alignSelf: "flex-start",
+            boxShadow: "2px 2px 0px #000000",
+            borderRadius: "4px",
+          }}
+          onClick={onRefresh}
+          disabled={radarScanning}
+        >
+          <RefreshCw size={13} className={radarScanning ? "animate-spin" : ""} /> RESCAN WORKSPACE
         </button>
       </div>
 
@@ -65,6 +80,22 @@ export function RadarView({ radarReport, radarScanning, onRefresh, onAutomate }:
               {radarReport.health_score}%
             </div>
             <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                <span
+                  className="brutal-tag"
+                  style={{
+                    backgroundColor: "var(--brutal-lime)",
+                    color: "#000000",
+                    fontSize: "10px",
+                    padding: "2px 8px",
+                  }}
+                >
+                  ● LIVE SCANNER ACTIVE
+                </span>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "#000000", fontWeight: 700 }}>
+                  Target: {radarReport.workspace_path}
+                </span>
+              </div>
               <h3 className="radar-banner-title">
                 Repository Hygiene Score
               </h3>
@@ -108,10 +139,19 @@ export function RadarView({ radarReport, radarScanning, onRefresh, onAutomate }:
 
                     <button
                       className="brutal-btn-primary"
-                      style={{ padding: "10px 20px", fontSize: "12px", whiteSpace: "nowrap" }}
+                      style={{
+                        padding: "6px 12px",
+                        fontSize: "11px",
+                        letterSpacing: "0.5px",
+                        whiteSpace: "nowrap",
+                        height: "32px",
+                        boxShadow: "2px 2px 0px #000000",
+                        borderRadius: "4px",
+                        flexShrink: 0,
+                      }}
                       onClick={() => onAutomate(f.suggested_prompt)}
                     >
-                      <Play size={14} /> AUTOMATE WITH PROOF
+                      <Play size={12} /> AUTOMATE WITH PROOF
                     </button>
                   </div>
                 </div>

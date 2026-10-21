@@ -763,6 +763,43 @@ pre,
   }
 
   /* Execution View mobile enhancements */
+  .view-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+
+  .execution-actions-group {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: auto !important;
+    margin-top: 6px !important;
+  }
+
+  .execution-actions-group .brutal-btn-danger,
+  .execution-actions-group .brutal-btn-primary,
+  .execution-actions-group button {
+    width: auto !important;
+    flex: 1 1 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    height: 36px !important;
+    box-sizing: border-box !important;
+  }
+
+  .execution-status-bar {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 4px !important;
+  }
+
   .step-card {
     padding: 16px 14px !important;
   }
@@ -845,4 +882,63 @@ pre,
   .brutal-btn-secondary {
     justify-content: center;
   }
+}
+
+/* --- Neo-Brutalist React-Toastify Customization --- */
+.Toastify__toast-container {
+  z-index: 99999 !important;
+}
+
+.Toastify__toast {
+  border: 2px solid #000000 !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+  border-radius: 6px !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  color: #000000 !important;
+  background-color: #FFFFFF !important;
+  margin-bottom: 12px !important;
+  padding: 14px 16px !important;
+}
+
+.Toastify__toast--success {
+  border-left: 8px solid var(--brutal-lime) !important;
+}
+
+.Toastify__toast--error {
+  border-left: 8px solid var(--brutal-rose) !important;
+}
+
+.Toastify__toast--info {
+  border-left: 8px solid var(--brutal-cyan) !important;
+}
+
+.Toastify__toast--warning {
+  border-left: 8px solid var(--brutal-yellow) !important;
+}
+
+.Toastify__progress-bar--success {
+  background: var(--brutal-lime) !important;
+}
+
+.Toastify__progress-bar--error {
+  background: var(--brutal-rose) !important;
+}
+
+.Toastify__progress-bar--info {
+  background: var(--brutal-cyan) !important;
+}
+
+.Toastify__progress-bar--warning {
+  background: var(--brutal-yellow) !important;
+}
+
+.Toastify__close-button {
+  color: #000000 !important;
+  opacity: 0.8 !important;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1 !important;
 }

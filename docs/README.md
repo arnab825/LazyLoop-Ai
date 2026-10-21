@@ -66,8 +66,9 @@ Welcome to the comprehensive technical documentation and governance specificatio
 
 ---
 
-## 📊 Architecture Diagrams
+## 📊 Architecture Diagrams & Visuals
 
+- [Visual UI Gallery & Screenshots](./screenshots/)
 - [System Architecture Diagram](./diagrams/system_architecture.mmd)
 - [Task Planning & Execution Flow](./diagrams/task_execution_flow.mmd)
 - [Database Entity Relationships](./diagrams/database_relationships.mmd)

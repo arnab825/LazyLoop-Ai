@@ -19,6 +19,7 @@ interface SidebarProps {
   workspacePath: string;
   setWorkspacePath?: (path: string) => void;
   health: any;
+  modelsData?: any;
   routinesCount: number;
   radarCount: number;
   currentTaskStatus?: string;
@@ -33,6 +34,7 @@ export function Sidebar({
   workspacePath,
   setWorkspacePath,
   health,
+  modelsData,
   routinesCount,
   radarCount,
   currentTaskStatus,
@@ -232,8 +234,8 @@ export function Sidebar({
           icon={<Cpu size={17} strokeWidth={2.2} />}
           label="Model Swap Lab"
           active={activeTab === "models"}
-          badge={health?.ollama_connected ? "OLLAMA" : "MOCK"}
-          badgeBg="#F3F4F6"
+          badge={health?.ollama_connected || modelsData?.ollama_available ? "OLLAMA" : "MOCK"}
+          badgeBg={health?.ollama_connected || modelsData?.ollama_available ? "var(--brutal-lime)" : "#F3F4F6"}
           onClick={() => setActiveTab("models")}
         />
       </div>

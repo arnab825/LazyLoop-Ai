@@ -18,7 +18,6 @@ import {
   FileCheck2,
 } from "lucide-react";
 import type { Routine, RadarReport } from "../../types";
-import heroBannerImg from "../../assets/images/hero_banner.jpg";
 import { NotificationBell } from "../ui/NotificationBell";
 
 interface OverviewViewProps {
@@ -137,7 +136,7 @@ export function OverviewView({
         </div>
         <div className="hero-image-pane">
           <img
-            src={heroBannerImg}
+            src="/hero_banner.jpg"
             alt="LazyLoop AI Workspace Illustration"
             className="hero-image"
           />

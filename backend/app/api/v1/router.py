@@ -33,6 +33,8 @@ async def health_check():
 @api_router.get("/workspaces/validate")
 async def validate_workspace(path: str = Query(..., description="Target directory path")):
     clean_path = path.strip()
+    if not os.path.exists(clean_path) and os.path.exists("/workspace") and os.path.isdir("/workspace"):
+        clean_path = "/workspace"
     if not os.path.exists(clean_path):
         return {"valid": False, "error": "Directory does not exist"}
     if not os.path.isdir(clean_path):

@@ -80,11 +80,19 @@ class ToolRegistry:
 
         return handler(workspace_root, arguments)
 
+    @staticmethod
+    def _extract_path(arguments: Dict[str, Any], default: str = "") -> str:
+        for key in ("path", "file_path", "filePath", "file", "target", "target_path", "filename", "file_name", "subfolder", "dir", "directory", "doc_path"):
+            val = arguments.get(key)
+            if val is not None and str(val).strip():
+                return str(val).strip()
+        return default
+
     # --- Tool Handlers ---
 
     @classmethod
     def _handle_list_directory(cls, workspace_root: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
-        target_subpath = arguments.get("path", "")
+        target_subpath = cls._extract_path(arguments, "")
         safe_path = WorkspaceValidator.resolve_safe_path(workspace_root, target_subpath)
         
         if not os.path.exists(safe_path):
@@ -110,7 +118,7 @@ class ToolRegistry:
 
     @classmethod
     def _handle_read_file(cls, workspace_root: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
-        target_subpath = arguments.get("path", "")
+        target_subpath = cls._extract_path(arguments, "")
         max_lines = arguments.get("max_lines", 500)
         safe_path = WorkspaceValidator.resolve_safe_path(workspace_root, target_subpath)
 
@@ -132,7 +140,7 @@ class ToolRegistry:
 
     @classmethod
     def _handle_find_duplicate_files(cls, workspace_root: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
-        subfolder = arguments.get("subfolder", "")
+        subfolder = cls._extract_path(arguments, "")
         safe_root = WorkspaceValidator.resolve_safe_path(workspace_root, subfolder)
         
         hash_map: Dict[str, List[str]] = {}
@@ -166,7 +174,7 @@ class ToolRegistry:
 
     @classmethod
     def _handle_check_doc_gaps(cls, workspace_root: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
-        doc_path = arguments.get("doc_path", "README.md")
+        doc_path = cls._extract_path(arguments, "README.md")
         safe_path = WorkspaceValidator.resolve_safe_path(workspace_root, doc_path)
 
         exists = os.path.exists(safe_path)
@@ -213,7 +221,7 @@ class ToolRegistry:
 
     @classmethod
     def _handle_create_file(cls, workspace_root: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
-        target_subpath = arguments.get("path", "")
+        target_subpath = cls._extract_path(arguments, "")
         content = arguments.get("content", "")
         safe_path = WorkspaceValidator.resolve_safe_path(workspace_root, target_subpath)
 
@@ -233,7 +241,7 @@ class ToolRegistry:
 
     @classmethod
     def _handle_update_file(cls, workspace_root: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
-        target_subpath = arguments.get("path", "")
+        target_subpath = cls._extract_path(arguments, "")
         content = arguments.get("content", "")
         safe_path = WorkspaceValidator.resolve_safe_path(workspace_root, target_subpath)
 
@@ -265,7 +273,7 @@ class ToolRegistry:
 
     @classmethod
     def _handle_delete_file(cls, workspace_root: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
-        target_subpath = arguments.get("path", "")
+        target_subpath = cls._extract_path(arguments, "")
         safe_path = WorkspaceValidator.resolve_safe_path(workspace_root, target_subpath)
 
         if not os.path.exists(safe_path):

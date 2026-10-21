@@ -1,0 +1,61 @@
+services:
+  # 1. Local AI Inference Engine (Ollama)
+  ollama:
+    image: docker.io/ollama/ollama:latest
+    container_name: lazyloop-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    restart: unless-stopped
+    # Optional GPU Passthrough (Uncomment if using NVIDIA Container Toolkit in Podman):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: cdi
+    #           count: all
+    #           capabilities: [gpu]
+
+  # 2. LazyLoop FastAPI Boundary & Execution Engine
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Containerfile
+    container_name: lazyloop-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - LAZYLOOP_HOST=0.0.0.0
+      - LAZYLOOP_PORT=8000
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - DEFAULT_MODEL=llama3.2:latest
+      - FALLBACK_TO_MOCK=true
+      - DATABASE_PATH=/app/data/lazyloop.db
+      - DATABASE_URL=sqlite:////app/data/lazyloop.db
+      - ALLOW_SYMLINKS=false
+    volumes:
+      - ./data:/app/data:Z
+      # Host workspace directory to analyze and manage inside container
+      - ${WORKSPACE_DIR:-./}:/workspace:Z
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  # 3. Neo-Brutalist React 19 Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Containerfile
+    container_name: lazyloop-frontend
+    environment:
+      - NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  ollama_models:
+    name: lazyloop_ollama_models

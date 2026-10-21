@@ -80,14 +80,26 @@ class TaskService:
         finally:
             await db.close()
 
-        # Generate Plan
+        # Generate Plan with graceful fallback if model is still downloading
         start_time = time.time()
         workspace_sample = [f.name for f in os.scandir(safe_root)][:15]
-        plan = await provider.generate_plan(
-            task_id=task_id,
-            prompt=prompt,
-            workspace_context={"root": safe_root, "files_sample": workspace_sample},
-        )
+        try:
+            plan = await provider.generate_plan(
+                task_id=task_id,
+                prompt=prompt,
+                workspace_context={"root": safe_root, "files_sample": workspace_sample},
+            )
+        except Exception:
+            if settings.fallback_to_mock and not isinstance(provider, DeterministicMockProvider):
+                mock_provider = DeterministicMockProvider()
+                plan = await mock_provider.generate_plan(
+                    task_id=task_id,
+                    prompt=prompt,
+                    workspace_context={"root": safe_root, "files_sample": workspace_sample},
+                )
+                model_name = "deterministic-mock"
+            else:
+                raise
         inference_latency = (time.time() - start_time) * 1000
 
         # Persist Steps and Approval Tokens

@@ -35,7 +35,7 @@ export function ExecutionView({
           <h1 className="view-title">
             Execution Log & Timeline
           </h1>
-          <div className="execution-status-bar">
+          <div className="execution-status-bar" style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
             <span className="execution-status-label">CURRENT_STATUS:</span>
             <span
               className="brutal-tag"
@@ -50,17 +50,62 @@ export function ExecutionView({
             >
               {currentTask?.status || "NO_ACTIVE_TASK"}
             </span>
+
+            {currentTask?.model_used && (
+              <span
+                className="brutal-tag"
+                style={{
+                  backgroundColor: currentTask.model_used.includes("mock") ? "var(--brutal-yellow)" : "var(--brutal-lime)",
+                  color: "#000000",
+                }}
+              >
+                ● MODEL: {currentTask.model_used} {currentTask.model_used.includes("mock") ? "(MOCK)" : "(LIVE OLLAMA)"}
+              </span>
+            )}
           </div>
         </div>
 
         {currentTask && (
-          <div className="execution-actions-group">
-            <button className="brutal-btn-danger" onClick={onUndo} disabled={loading}>
-              <RotateCcw size={15} /> 1-CLICK BIT-FOR-BIT UNDO
+          <div
+            className="execution-actions-group"
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: "8px",
+              flexWrap: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            <button
+              className="brutal-btn-danger"
+              style={{
+                height: "36px",
+                padding: "6px 12px",
+                fontSize: "11px",
+                whiteSpace: "nowrap",
+                boxShadow: "2px 2px 0px #000000",
+                borderRadius: "4px",
+              }}
+              onClick={onUndo}
+              disabled={loading}
+            >
+              <RotateCcw size={14} /> 1-CLICK BIT-FOR-BIT UNDO
             </button>
             {currentTask.receipt && (
-              <button className="brutal-btn-primary" onClick={onViewReceipt}>
-                <FileCheck size={16} /> VIEW PROOF RECEIPT
+              <button
+                className="brutal-btn-primary"
+                style={{
+                  height: "36px",
+                  padding: "6px 12px",
+                  fontSize: "11px",
+                  whiteSpace: "nowrap",
+                  boxShadow: "2px 2px 0px #000000",
+                  borderRadius: "4px",
+                }}
+                onClick={onViewReceipt}
+              >
+                <FileCheck size={14} /> VIEW PROOF RECEIPT
               </button>
             )}
           </div>
@@ -197,7 +242,6 @@ export function ExecutionView({
                 />
                 <button
                   className="brutal-btn-primary"
-                  style={{ backgroundColor: "#000000", color: "var(--brutal-lime)" }}
                   onClick={onSaveRoutine}
                   disabled={routineSaved || !routineName}
                 >

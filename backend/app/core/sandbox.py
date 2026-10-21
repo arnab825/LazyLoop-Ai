@@ -21,6 +21,12 @@ class WorkspaceValidator:
         if not workspace_path:
             raise SecurityBoundaryException("Workspace path cannot be empty.")
         
+        # When running containerized where /workspace is mounted, seamlessly map host paths
+        if os.path.exists("/workspace") and os.path.isdir("/workspace"):
+            clean = workspace_path.strip()
+            if clean in ["/workspace", "workspace"] or not os.path.exists(os.path.realpath(os.path.abspath(clean))):
+                return os.path.realpath("/workspace")
+
         real_root = os.path.realpath(os.path.abspath(workspace_path))
         if not os.path.exists(real_root):
             raise SecurityBoundaryException(f"Workspace directory does not exist: {workspace_path}")
@@ -41,7 +47,15 @@ class WorkspaceValidator:
         # Reject leading slashes, drive letters, and traversal tokens immediately
         clean_subpath = target_subpath.strip()
         
-        # Check if subpath is an absolute path or has drive letter
+        # If the model passed an absolute path matching canonical_root or '/workspace', normalize to relative
+        if clean_subpath == canonical_root or clean_subpath in ["/workspace", "workspace"]:
+            clean_subpath = ""
+        elif clean_subpath.startswith(canonical_root + "/") or clean_subpath.startswith(canonical_root + "\\"):
+            clean_subpath = clean_subpath[len(canonical_root):].lstrip("/\\")
+        elif clean_subpath.startswith("/workspace/") or clean_subpath.startswith("workspace/"):
+            clean_subpath = clean_subpath.replace("/workspace/", "").replace("workspace/", "").lstrip("/\\")
+
+        # Check if subpath is an absolute path or has drive letter outside workspace
         if os.path.isabs(clean_subpath) or (len(clean_subpath) > 1 and clean_subpath[1] == ":"):
             raise SecurityBoundaryException(f"Absolute paths or drive letters forbidden in subpath: '{clean_subpath}'")
             

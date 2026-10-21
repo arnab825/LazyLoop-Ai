@@ -24,16 +24,28 @@ export function ReceiptsView({ currentTask, onGoToStudio }: ReceiptsViewProps) {
         <div className="brutal-card receipt-card">
           <div className="receipt-header">
             <div>
-              <span
-                className="brutal-tag"
-                style={{
-                  backgroundColor: "var(--brutal-lime)",
-                  color: "#000000",
-                  marginBottom: "8px",
-                }}
-              >
-                EVIDENCE_BACKED_RECEIPT
-              </span>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
+                <span
+                  className="brutal-tag"
+                  style={{
+                    backgroundColor: "var(--brutal-lime)",
+                    color: "#000000",
+                  }}
+                >
+                  EVIDENCE_BACKED_RECEIPT
+                </span>
+                {currentTask.receipt.model_used && (
+                  <span
+                    className="brutal-tag"
+                    style={{
+                      backgroundColor: currentTask.receipt.model_used.includes("mock") ? "var(--brutal-yellow)" : "var(--brutal-cyan)",
+                      color: "#000000",
+                    }}
+                  >
+                    ● AI ENGINE: {currentTask.receipt.model_used}
+                  </span>
+                )}
+              </div>
               <h2 className="receipt-title">
                 {currentTask.receipt.prompt}
               </h2>

@@ -10,6 +10,7 @@ interface TaskStudioViewProps {
   setPrompt: (p: string) => void;
   loading: boolean;
   onExecute: () => void;
+  modelsData?: any;
 }
 
 const AUTONOMY_OPTIONS = [
@@ -199,6 +200,7 @@ export function TaskStudioView({
   setPrompt,
   loading,
   onExecute,
+  modelsData,
 }: TaskStudioViewProps) {
   return (
     <div>
@@ -215,9 +217,24 @@ export function TaskStudioView({
         {/* Workspace Path and Autonomy */}
         <div className="task-studio-controls">
           <div>
-            <label className="form-label">
-              RESTRICTED WORKSPACE ROOT
-            </label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+              <label className="form-label" style={{ margin: 0 }}>
+                RESTRICTED WORKSPACE ROOT
+              </label>
+              {modelsData && (
+                <span
+                  className="brutal-tag"
+                  style={{
+                    backgroundColor: modelsData.ollama_available ? "var(--brutal-lime)" : "var(--brutal-yellow)",
+                    color: "#000000",
+                    fontSize: "10px",
+                    padding: "2px 6px",
+                  }}
+                >
+                  ● {modelsData.ollama_available ? `LIVE: ${modelsData.active_model}` : "MOCK ENGINE"}
+                </span>
+              )}
+            </div>
             <div className="input-icon-wrapper">
               <input
                 type="text"

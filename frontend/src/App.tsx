@@ -22,6 +22,9 @@ import { RoutinesView } from "./components/views/RoutinesView";
 import { RadarView } from "./components/views/RadarView";
 import { ModelsView } from "./components/views/ModelsView";
 import { AuditModal } from "./components/views/AuditModal";
+import { NotificationBell } from "./components/ui/NotificationBell";
+import { ToastContainer } from "react-toastify";
+import { showToast } from "./utils/toast";
 import "./App.css";
 
 export default function App() {
@@ -31,7 +34,7 @@ export default function App() {
 
   // System & Workspace State
   const [health, setHealth] = useState<any>(null);
-  const [workspacePath, setWorkspacePath] = useState<string>("d:/hacktoberfest/LazyLoop Ai");
+  const [workspacePath, setWorkspacePath] = useState<string>("/workspace");
 
   // New Task State
   const [prompt, setPrompt] = useState<string>(
@@ -76,7 +79,16 @@ export default function App() {
     loadHealthAndModels();
     loadRoutines();
     handleScanRadar();
+
+    const timer = setInterval(() => {
+      loadHealthAndModels();
+    }, 5000);
+    return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    loadHealthAndModels();
+  }, [activeTab]);
 
   // Mobile Drawer State
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
@@ -116,6 +128,29 @@ export default function App() {
     }
   }
 
+  const addNotification = (
+    type: "success" | "warning" | "info" | "error",
+    title: string,
+    message: string
+  ) => {
+    if (type === "success") showToast.success(`${title}: ${message}`);
+    else if (type === "error") showToast.error(`${title}: ${message}`);
+    else if (type === "warning") showToast.warning(`${title}: ${message}`);
+    else showToast.info(`${title}: ${message}`);
+
+    setNotifications((prev) => [
+      {
+        id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        type: type === "error" ? "warning" : type,
+        title,
+        message,
+        timestamp: "Just now",
+        read: false,
+      },
+      ...prev,
+    ]);
+  };
+
   async function handleCreateTask() {
     if (!workspacePath) return;
     setLoading(true);
@@ -125,8 +160,9 @@ export default function App() {
       const task = await createTask(prompt, workspacePath, autonomyMode);
       setCurrentTask(task);
       setActiveTab("execution");
+      addNotification("success", "Task Compiled", `Plan generated with ${task.steps.length} operation${task.steps.length > 1 ? "s" : ""}.`);
     } catch (e: any) {
-      alert("Error creating task: " + e.message);
+      addNotification("error", "Task Creation Failed", e.message || "Failed to create task");
     } finally {
       setLoading(false);
     }
@@ -144,8 +180,13 @@ export default function App() {
         },
       ]);
       setCurrentTask(updated);
+      addNotification(
+        approved ? "success" : "warning",
+        approved ? "Step Approved" : "Step Rejected",
+        `Step ${step.step_index + 1} (${step.tool_name}) has been ${approved ? "approved" : "rejected"}.`
+      );
     } catch (e: any) {
-      alert("Approval error: " + e.message);
+      addNotification("error", "Approval Error", e.message || "Failed to update step approval");
     } finally {
       setLoading(false);
     }
@@ -155,12 +196,17 @@ export default function App() {
     if (!currentTask) return;
     setLoading(true);
     try {
-      const res = await undoTask(currentTask.id, workspacePath);
+      const res: any = await undoTask(currentTask.id, workspacePath);
       setUndoStatus(res);
       const updated = await getTask(currentTask.id);
       setCurrentTask(updated);
+      addNotification(
+        "info",
+        "Rollback Verified",
+        `Restored ${res.restored_count} file${res.restored_count > 1 ? "s" : ""} bit-for-bit to pre-execution state.`
+      );
     } catch (e: any) {
-      alert("Undo error: " + e.message);
+      addNotification("error", "Undo Error", e.message || "Failed to undo task");
     } finally {
       setLoading(false);
     }
@@ -172,8 +218,9 @@ export default function App() {
       await createRoutine(routineName, `Workflow created from task "${currentTask.prompt}"`, currentTask.id, workspacePath);
       setRoutineSaved(true);
       loadRoutines();
+      addNotification("success", "Routine DNA Saved", `Routine "${routineName}" saved with drift validation.`);
     } catch (e: any) {
-      alert("Routine error: " + e.message);
+      addNotification("error", "Routine Error", e.message || "Failed to save routine");
     }
   }
 
@@ -189,6 +236,7 @@ export default function App() {
         await new Promise((resolve) => setTimeout(resolve, 400 - elapsed));
       }
       setRadarReport(report);
+      addNotification("info", "Radar Diagnostics", `Workspace scan detected ${report.total_findings} hygiene finding${report.total_findings > 1 ? "s" : ""}.`);
     } catch (e: any) {
       console.warn("Radar scan error:", e);
     } finally {
@@ -215,7 +263,7 @@ export default function App() {
         setAuditData(res);
       }
     } catch (e: any) {
-      alert(`Audit failed: ${e.message}`);
+      addNotification("error", "Audit Failed", e.message || "Failed to run audit");
       setAuditModalOpen(false);
     } finally {
       setAuditLoading(false);
@@ -243,6 +291,13 @@ export default function App() {
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <NotificationBell
+            notifications={notifications}
+            onMarkAllAsRead={() =>
+              setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+            }
+            onClear={() => setNotifications([])}
+          />
           <span
             style={{
               fontSize: "9px",
@@ -274,6 +329,7 @@ export default function App() {
         workspacePath={workspacePath}
         setWorkspacePath={setWorkspacePath}
         health={health}
+        modelsData={modelsData}
         routinesCount={routines.length}
         radarCount={radarReport?.total_findings || 0}
         currentTaskStatus={currentTask?.status}
@@ -316,6 +372,7 @@ export default function App() {
             setPrompt={setPrompt}
             loading={loading}
             onExecute={handleCreateTask}
+            modelsData={modelsData}
           />
         )}
 
@@ -380,6 +437,8 @@ export default function App() {
           setActiveTab("new_task");
         }}
       />
+      {/* Global Toastify Notifications Container */}
+      <ToastContainer />
     </div>
   );
 }

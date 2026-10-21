@@ -396,7 +396,10 @@
 
 .execution-actions-group {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 .execution-undo-banner {
@@ -626,13 +629,18 @@
 }
 
 .evidence-thead {
-  background-color: #000000;
-  color: var(--brutal-lime);
+  background-color: var(--bg-card-subtle);
+  color: #000000;
   font-family: var(--font-mono);
+  border-bottom: 2px solid #000000;
 }
 
 .evidence-thead th {
   padding: 14px 18px;
+  color: #000000;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.05em;
 }
 
 .evidence-tbody {
@@ -641,7 +649,12 @@
 }
 
 .evidence-row {
-  border-top: 2px solid #E5E7EB;
+  border-top: 1px solid #E5E7EB;
+  transition: background-color 0.15s ease;
+}
+
+.evidence-row:hover {
+  background-color: var(--bg-card-hover);
 }
 
 .evidence-row td {

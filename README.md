@@ -17,11 +17,12 @@
 ---
 
 [Key Highlights](#-key-highlights) •
-[Architecture](#-system-architecture) •
-[Quick Start](#-quick-start) •
+[Visual Showcase](#-visual-showcase) •
+[System Architecture](#-system-architecture) •
+[Podman Desktop Setup](#-running-with-podman-desktop-recommended) •
+[Bare-Metal Setup](#-alternative-local-bare-metal-setup) •
 [Core Features](#-core-capabilities) •
-[Security & Sandbox](#-security--safety-model) •
-[Design System](#-neo-brutalist-design-system) •
+[Security Model](#-security--safety-model) •
 [Documentation](#-complete-technical-documentation)
 
 ---
@@ -39,6 +40,56 @@ Traditional AI coding assistants ask for root access, hallucinate modifications,
 - ⏪ **1-Click Pre-Execution Rollbacks**: Every modified or deleted file is snapshot into `.lazyloop/backups/` before any byte is altered.
 - 🧬 **Deterministic Routine DNA**: Approved cleanup operations turn into reusable recipes with automated drift and precondition validation.
 - 💻 **100% Local Sovereignty**: Operates with local open-weight models via [Ollama](https://ollama.ai) (`llama3.2`, `qwen2.5-coder`) or an instant, offline deterministic fallback engine.
+
+---
+
+## 📸 Visual Showcase
+
+Explore the Neo-Brutalist interface and workflow lifecycle of LazyLoop AI:
+
+### 1. Command Station & Overview
+*Central workspace telemetry, hygiene score, manual hours avoided, and rapid one-click chore triggers.*
+<p align="center">
+  <img src="./docs/screenshots/1.png" alt="LazyLoop AI Overview Dashboard" width="95%" />
+</p>
+
+### 2. Task Studio (Natural Language Compiler)
+*Bound your workspace root, choose autonomy policies (`Safe Auto`, `Review All`, `Dry Run`), and compile high-level prompts into sandboxed execution steps powered by live local Ollama.*
+<p align="center">
+  <img src="./docs/screenshots/2.png" alt="Task Studio with Live Llama 3.2 Badge" width="95%" />
+</p>
+
+### 3. Execution Log & Reversible Rollback Engine
+*Inspect step-by-step progress, approve read/write mutations, execute 1-click bit-for-bit rollbacks, and extract verified workflows directly into Routine DNA templates.*
+<p align="center">
+  <img src="./docs/screenshots/3.png" alt="Execution Log and Rollback Banner" width="95%" />
+</p>
+
+### 4. Proof-of-Work Receipts & Cryptographic Verification
+*Every completed task generates an immutable proof receipt with pre/post SHA-256 digests, assertion verifications, execution latency, and exportable JSON audit records.*
+<p align="center">
+  <img src="./docs/screenshots/4.png" alt="Proof of Work Receipts Evidence Table" width="95%" />
+</p>
+
+### 5. Routine DNA Manager
+*Turn approved workflows into repeatable templates. Automatic precondition drift detection guards against broken assumptions before re-running.*
+<p align="center">
+  <img src="./docs/screenshots/5.png" alt="Routine DNA Manager" width="95%" />
+</p>
+
+### 6. Procrastination Radar (Automated Maintenance Scanner)
+*Background repository hygiene scanner detecting missing README sections, duplicate asset groups, and lingering TODOs ranked by urgency and impact.*
+<p align="center">
+  <img src="./docs/screenshots/6.png" alt="Procrastination Radar Scanner" width="95%" />
+</p>
+
+### 7. Model Swap Lab (Dual Inference Providers)
+*Hot-swap between local Ollama neural weights (`llama3.2:latest`) and a zero-dependency deterministic planning engine.*
+
+| **Connected Local Ollama Engine** | **Standby Deterministic Planner** |
+|:---:|:---:|
+| <img src="./docs/screenshots/7.png" alt="Local Ollama Active" width="100%" /> | <img src="./docs/screenshots/8.png" alt="Deterministic Mock Active" width="100%" /> |
+| *Active neural inference (`llama3.2:latest`)* | *Zero-overhead, instant deterministic fallback* |
 
 ---
 
@@ -78,21 +129,73 @@ flowchart TD
 
 ## 🚀 Quick Start
 
-Get LazyLoop AI up and running locally in under **2 minutes**.
+You can run LazyLoop AI using **Podman Desktop (Recommended)** with zero host runtime dependencies, or via **Bare-Metal Local Setup**.
 
-### Prerequisites
+---
+
+### 🐳 Running with Podman Desktop (Recommended)
+
+Run the complete LazyLoop AI stack (FastAPI Backend + React 19 Frontend + Local Ollama Container) in isolated containers. **No Ollama Desktop, Python, or Node.js installation is required on your host machine.**
+
+#### Step 1: Install Podman Desktop
+1. Download and install **Podman Desktop** from [podman-desktop.io](https://podman-desktop.io/).
+2. On Windows, ensure the WSL2 backend is active.
+
+#### Step 2: Allocate Machine Memory (Recommended: 4–6 GB)
+Local neural weights (like `llama3.2`) require sufficient virtual machine memory:
+```powershell
+# Stop machine to adjust resources
+podman machine stop
+
+# Set memory to 6GB (6144 MB) and 4 CPUs
+podman machine set --memory 6144 --cpus 4
+
+# Restart the machine
+podman machine start
+```
+
+#### Step 3: Launch Stack with Podman Compose
+Clone the repository and spin up all three containers (`lazyloop-ollama`, `lazyloop-backend`, `lazyloop-frontend`):
+
+```powershell
+git clone https://github.com/arnab825/LazyLoop-Ai.git
+cd "LazyLoop-Ai"
+
+# Optional: Point to host workspace to sandbox (defaults to current dir)
+$env:WORKSPACE_DIR = "D:\path\to\your\project"  # Windows
+# export WORKSPACE_DIR="/path/to/your/project"   # Linux/macOS
+
+# Spin up all containers
+podman compose up -d --build
+```
+
+#### Step 4: Pull Models into Container Volume
+Pull the open-weight model directly into the `lazyloop-ollama` container volume:
+```bash
+podman exec -it lazyloop-ollama ollama pull llama3.2:latest
+```
+
+#### Step 5: Access Dashboard
+Open **[http://localhost:5173](http://localhost:5173)** in your browser.
+- **Frontend Dashboard**: `http://localhost:5173`
+- **FastAPI OpenAPI Docs**: `http://localhost:8000/docs`
+- **Container Ollama Daemon**: `http://localhost:11434`
+
+---
+
+### 💻 Alternative: Local Bare-Metal Setup
+
+If you prefer running without containers directly on your host machine:
+
+#### Prerequisites
 - **Python 3.12+**
 - **Node.js 20+** and `npm`
-- *(Optional for AI)* [Ollama](https://ollama.ai) installed with `ollama run llama3.2` or `ollama run qwen2.5-coder`
+- *(Optional for AI)* [Ollama](https://ollama.ai) installed with `ollama run llama3.2`
 
-### 1. Backend Setup
-
+#### 1. Backend Setup
 ```bash
-# Clone the repository
-git clone https://github.com/arnab825/LazyLoop-Ai.git
 cd "LazyLoop Ai/backend"
 
-# Create and activate virtual environment
 # Windows (PowerShell):
 python -m venv .venv
 .venv\Scripts\Activate.ps1
@@ -101,30 +204,22 @@ python -m venv .venv
 python3 -m venv .venv
 source .venv/bin/activate
 
-# Install dependencies
+# Install dependencies & launch FastAPI
 pip install -r requirements.txt
-
-# Start the FastAPI engine
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-> The backend will be live at `http://127.0.0.1:8000` (API documentation available at `/docs`).
-
-### 2. Frontend Setup
-
+#### 2. Frontend Setup
 In a new terminal window:
-
 ```bash
 cd "LazyLoop Ai/frontend"
-
-# Install dependencies
 npm install
-
-# Launch Vite development server
 npm run dev
 ```
 
-> Open [http://localhost:5173](http://localhost:5173) in your browser.
+> Open **[http://localhost:5173](http://localhost:5173)** in your browser.
+
+> For deep-dive networking topology, GPU CDI passthrough, and Kubernetes-style Pods, see the [**Podman Deployment Guide**](./docs/DEPLOYMENT.md).
 
 ---
 
