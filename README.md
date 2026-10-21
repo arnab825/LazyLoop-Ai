@@ -170,9 +170,13 @@ podman compose up -d --build
 ```
 
 #### Step 4: Pull Models into Container Volume
-Pull the open-weight model directly into the `lazyloop-ollama` container volume:
+Pull your preferred open-weight models directly into the `lazyloop-ollama` container volume:
 ```bash
+# General workflow reasoning & planning:
 podman exec -it lazyloop-ollama ollama pull llama3.2:latest
+
+# Specialized code analysis & refactoring:
+podman exec -it lazyloop-ollama ollama pull qwen2.5-coder:latest
 ```
 
 #### Step 5: Access Dashboard
@@ -190,7 +194,7 @@ If you prefer running without containers directly on your host machine:
 #### Prerequisites
 - **Python 3.12+**
 - **Node.js 20+** and `npm`
-- *(Optional for AI)* [Ollama](https://ollama.ai) installed with `ollama run llama3.2`
+- *(Optional for AI)* [Ollama](https://ollama.ai) installed with `ollama run llama3.2` or `ollama run qwen2.5-coder`
 
 #### 1. Backend Setup
 ```bash

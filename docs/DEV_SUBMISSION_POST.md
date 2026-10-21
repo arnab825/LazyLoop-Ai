@@ -39,7 +39,7 @@ When developers attempt to automate these chores with standard AI coding agents,
 ```
 
 ### Key Pillars
-1. **AI as Planner, Not Root**: The AI (powered locally by open-weight models like `llama3.2` via Ollama) only outputs strict, Pydantic-validated JSON tool plans. Raw shell commands (`exec`, `bash`, `cmd`, `sh`) are physically omitted from the engine.
+1. **AI as Planner, Not Root**: The AI (powered locally by open-weight models like `llama3.2` and `qwen2.5-coder` via Ollama) only outputs strict, Pydantic-validated JSON tool plans. Raw shell commands (`exec`, `bash`, `cmd`, `sh`) are physically omitted from the engine.
 2. **Physical Workspace Boundary (`WorkspaceValidator`)**: File access is strictly contained to an authorized folder. Path traversals (`../../etc/passwd`), null-byte injections, drive hopping, and symlink escapes are hard-blocked at the OS boundary.
 3. **Pre-Execution Snapshots & 1-Click Rollback**: Before any file is modified or deleted, an automated pre-execution snapshot is archived in `.lazyloop/backups/<task_id>/`. If an automation produces unexpected results, one click restores every file bit-for-bit.
 4. **Cryptographic Proof Receipts**: LazyLoop verifies every action deterministically using pre/post SHA-256 hashes and file presence assertions. You receive an immutable Proof-of-Work receipt with timing and byte hashes.
@@ -97,7 +97,7 @@ sequenceDiagram
     actor User as Developer / User
     participant UI as React 19 UI
     participant Gate as Autonomy Policy Gate
-    participant LLM as Local Ollama (llama3.2)
+    participant LLM as Local Ollama (llama3.2 / qwen2.5-coder)
     participant Guard as Workspace Boundary Guard
     participant Snap as Pre-Execution Snapshot
     participant Tools as Sandboxed Tool Registry
@@ -148,7 +148,7 @@ When a user submits a prompt, they define the automation guardrail level:
 - **`DRY_RUN`**: Full non-destructive simulation. Analyzes and plans operations without touching a single file on disk.
 
 #### 2. AI as Planner, Never Executioner
-The user prompt is forwarded to a local Ollama container (`lazyloop-ollama`) running `llama3.2:latest`. 
+The user prompt is forwarded to a local Ollama container (`lazyloop-ollama`) running open-weight models like `llama3.2:latest` or `qwen2.5-coder:latest`. 
 - The model is instructed to output **only structured JSON conforming to Pydantic schemas**.
 - Available tools are restricted to a closed whitelist: `list_directory`, `read_file`, `find_duplicate_files`, `check_doc_gaps`, `create_file`, `update_file`, `delete_file`, and `move_file`.
 - Raw shell execution (`exec`, `bash`, `cmd`, `sh`) is strictly omitted. Prompt injections cannot trick the model into executing OS commands because the backend has no shell runner.
@@ -231,7 +231,7 @@ Instead of writing and maintaining brittle bash or python cleanup scripts, devel
 
 Open innovation is not just an ideological preference for LazyLoop AI—it is the foundation of its safety architecture:
 
-1. **Auditability Over Secrecy**: Closed AI APIs are black boxes. Their prompts change, their models drift, and their safety policies are opaque. Open-source models like `llama3.2` and open-source harnesses allow developers to audit every byte that moves between the model and the operating system.
+1. **Auditability Over Secrecy**: Closed AI APIs are black boxes. Their prompts change, their models drift, and their safety policies are opaque. Open-source models like `llama3.2` and `qwen2.5-coder` and open harnesses allow developers to audit every byte that moves between the model and the operating system.
 2. **True Reproducibility**: When a developer creates a Routine DNA template using an open-weight model running locally, they can be confident that the routine will produce consistent results tomorrow, next month, and next year—unaffected by remote model deprecations.
 3. **Democratizing Developer Productivity**: High-quality workflow automation should not be gated behind expensive monthly subscriptions or cloud API quotas. Open-source AI turns intelligent workspace automation into a zero-marginal-cost public good.
 
@@ -252,13 +252,17 @@ cd LazyLoop-Ai
 podman-compose up -d --build
 ```
 
-### 3. Pull the Local Model
+### 3. Pull Your Preferred Open-Weight Model
 ```bash
+# Option A: Llama 3.2 (fast general reasoning & workflow planning)
 podman exec -it lazyloop-ollama ollama run llama3.2:latest
+
+# Option B: Qwen 2.5 Coder (specialized coding & repository refactoring)
+podman exec -it lazyloop-ollama ollama run qwen2.5-coder:latest
 ```
 
 ### 4. Open the Command Station
-Navigate to **`http://localhost:3000`** in your browser. All services (Frontend, Backend, and Ollama) are connected and ready to automate!
+Navigate to **`http://localhost:3000`** in your browser. Seamlessly hot-swap between `llama3.2`, `qwen2.5-coder`, or the mock fallback from the UI!
 
 > *Tip: For Podman on Windows or macOS, allocate 4–6 GB of memory to the Podman machine for optimal local LLM performance.*
 
