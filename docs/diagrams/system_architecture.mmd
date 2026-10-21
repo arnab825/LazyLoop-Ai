@@ -13,20 +13,20 @@
   }
 }}%%
 graph TB
-    subgraph Client ["💻 Client Presentation Layer (React 19 + Vite)"]
+    subgraph Client ["Client Presentation Layer (React 19 + Vite)"]
         UI[User Interface & Dashboard]
         SSEClient[SSE Real-time Event Receiver]
         DiffViewer[Visual Diff & Verification Viewer]
     end
 
-    subgraph API ["⚡ Application Server (FastAPI / 127.0.0.1)"]
+    subgraph API ["Application Server (FastAPI / 127.0.0.1)"]
         TaskRouter["/api/v1/tasks Router"]
         ApprovalRouter["/api/v1/approvals Router"]
         RoutineRouter["/api/v1/routines Router"]
         ModelRouter["/api/v1/models Router"]
     end
 
-    subgraph PlanningEngine ["🧠 Planning & Intelligence Layer"]
+    subgraph PlanningEngine ["Planning & Intelligence Layer"]
         ModelAdapter["Model Adapter Interface"]
         OllamaProvider["Ollama Local Provider"]
         MockProvider["Deterministic Mock Provider"]
@@ -34,7 +34,7 @@ graph TB
         RiskClassifier["Risk Classifier (Read/Low/High)"]
     end
 
-    subgraph ExecutionEngine ["🔒 Safe Execution & Sandbox Layer"]
+    subgraph ExecutionEngine ["Safe Execution & Sandbox Layer"]
         WorkspaceSandbox["Workspace Boundary Validator"]
         ToolRegistry["Allowlisted Safe Tool Registry"]
         BackupService["Pre-Execution Snapshot (.lazyloop/backups/)"]
@@ -42,7 +42,7 @@ graph TB
         ReceiptGenerator["Proof-of-Work Receipt Generator"]
     end
 
-    subgraph Storage ["💾 Local Persistence Layer"]
+    subgraph Storage ["Local Persistence Layer"]
         SQLite[(SQLite 3 Database)]
         DiskStore["Workspace Files & Backup Snapshots"]
     end
@@ -86,4 +86,4 @@ graph TB
     class SQLite,DiskStore storageNode
 
     %% High-contrast links
-    linkStyle default stroke:#388BFD,stroke-width:2.5px,color:#000000;
+    linkStyle default stroke:#388BFD,stroke-width:2.5px;

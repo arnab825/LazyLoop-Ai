@@ -13,32 +13,32 @@
   }
 }}%%
 flowchart TD
-    subgraph UntrustedZone ["🛑 Untrusted Input Zone"]
+    subgraph UntrustedZone ["Untrusted Input Zone"]
         UserPrompt["User Natural Language Prompt"]
         RepoFiles["Workspace Untrusted Files & Scripts"]
         RemoteNetwork["External Web (Blocked by Default)"]
     end
 
-    subgraph DefensePerimeter ["🛡️ Perimeter Defense & Ingestion Controls"]
+    subgraph DefensePerimeter ["Perimeter Defense & Ingestion Controls"]
         LoopbackGuard["127.0.0.1 Loopback Host Enforcer"]
         CORSGuard["Strict Origin Filter (localhost:5173)"]
         Sanitizer["Prompt & Path Input Sanitizer"]
     end
 
-    subgraph PlanningBoundary ["🧠 Planner Containment Zone"]
+    subgraph PlanningBoundary ["Planner Containment Zone"]
         ModelRuntime["Ollama / Deterministic Mock"]
         PlanValidator["Strict Pydantic JSON Schema Enforcer"]
         RiskEngine["Static Risk Classifier (Read / Low / Destructive)"]
     end
 
-    subgraph ExecutionBoundary ["🔒 Sandboxed Execution Sandbox"]
+    subgraph ExecutionBoundary ["Sandboxed Execution Sandbox"]
         PathValidator["Workspace Boundary Enforcer (realpath containment)"]
         ApprovalGate["Cryptographic Action Approval Token Gate"]
         ToolAllowlist["Strict Tool Allowlist (No Shell Execution)"]
         BackupEngine["Pre-Execution Snapshot Store (.lazyloop/backups/)"]
     end
 
-    subgraph VerificationZone ["📜 Deterministic Verification & Proof Zone"]
+    subgraph VerificationZone ["Deterministic Verification & Proof Zone"]
         HashEngine["SHA-256 Before/After Content Verifier"]
         DiffEngine["Unified Diff Generator"]
         ReceiptVault["Immutable Proof-of-Work Receipt (SQLite)"]
@@ -83,8 +83,8 @@ flowchart TD
     class HashEngine,DiffEngine,ReceiptVault verifyNode
 
     %% High-contrast edge and arrow styling (visible on dark AND light themes)
-    linkStyle default stroke:#388BFD,stroke-width:2.5px,color:#000000;
-    linkStyle 1 stroke:#FF4D6D,stroke-width:2.5px,stroke-dasharray: 5 5,color:#FF4D6D;
-    linkStyle 7 stroke:#FF9F1C,stroke-width:2.5px,color:#B45309;
-    linkStyle 8 stroke:#10B981,stroke-width:2.5px,color:#047857;
-    linkStyle 9 stroke:#388BFD,stroke-width:2.5px,color:#1D4ED8;
+    linkStyle default stroke:#388BFD,stroke-width:2.5px;
+    linkStyle 1 stroke:#FF4D6D,stroke-width:2.5px,stroke-dasharray: 5 5;
+    linkStyle 7 stroke:#FF9F1C,stroke-width:2.5px;
+    linkStyle 8 stroke:#10B981,stroke-width:2.5px;
+    linkStyle 9 stroke:#388BFD,stroke-width:2.5px;
