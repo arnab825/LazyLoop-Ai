@@ -1,0 +1,51 @@
+```mermaid
+flowchart TD
+    subgraph UntrustedZone ["Untrusted Input Zone"]
+        UserPrompt["User Natural Language Prompt"]
+        RepoFiles["Workspace Untrusted Files & Scripts"]
+        RemoteNetwork["External Web (Blocked by Default)"]
+    end
+
+    subgraph DefensePerimeter ["Perimeter Defense & Ingestion Controls"]
+        LoopbackGuard["127.0.0.1 Loopback Host Enforcer"]
+        CORSGuard["Strict Origin Filter (localhost:5173)"]
+        Sanitizer["Prompt & Path Input Sanitizer"]
+    end
+
+    subgraph PlanningBoundary ["Planner Containment Zone"]
+        ModelRuntime["Ollama / Deterministic Mock"]
+        PlanValidator["Strict Pydantic JSON Schema Enforcer"]
+        RiskEngine["Static Risk Classifier (Read / Low / Destructive)"]
+    end
+
+    subgraph ExecutionBoundary ["Sandboxed Execution Sandbox"]
+        PathValidator["Workspace Boundary Enforcer (realpath containment)"]
+        ApprovalGate["Cryptographic Action Approval Token Gate"]
+        ToolAllowlist["Strict Tool Allowlist (No Shell Execution)"]
+        BackupEngine["Pre-Execution Snapshot Store (.lazyloop/backups/)"]
+    end
+
+    subgraph VerificationZone ["Deterministic Verification & Proof Zone"]
+        HashEngine["SHA-256 Before/After Content Verifier"]
+        DiffEngine["Unified Diff Generator"]
+        ReceiptVault["Immutable Proof-of-Work Receipt (SQLite)"]
+    end
+
+    UserPrompt --> LoopbackGuard
+    RepoFiles -.->|Untrusted Content| PathValidator
+    LoopbackGuard --> CORSGuard
+    CORSGuard --> Sanitizer
+    Sanitizer --> ModelRuntime
+    ModelRuntime --> PlanValidator
+    PlanValidator --> RiskEngine
+
+    RiskEngine -->|High Risk Action| ApprovalGate
+    ApprovalGate -->|Authorized by User| PathValidator
+    RiskEngine -->|Read Only Action| PathValidator
+
+    PathValidator --> ToolAllowlist
+    ToolAllowlist --> BackupEngine
+    ToolAllowlist --> HashEngine
+    HashEngine --> DiffEngine
+    DiffEngine --> ReceiptVault
+```

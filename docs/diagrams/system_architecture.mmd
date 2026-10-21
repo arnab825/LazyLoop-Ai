@@ -1,0 +1,54 @@
+```mermaid
+graph TB
+    subgraph Client ["Client Presentation Layer (React 19 + Vite)"]
+        UI[User Interface & Dashboard]
+        SSEClient[SSE Real-time Event Receiver]
+        DiffViewer[Visual Diff & Verification Viewer]
+    end
+
+    subgraph API ["Application Server (FastAPI / 127.0.0.1)"]
+        TaskRouter["/api/v1/tasks Router"]
+        ApprovalRouter["/api/v1/approvals Router"]
+        RoutineRouter["/api/v1/routines Router"]
+        ModelRouter["/api/v1/models Router"]
+    end
+
+    subgraph PlanningEngine ["Planning & Intelligence Layer"]
+        ModelAdapter["Model Adapter Interface"]
+        OllamaProvider["Ollama Local Provider"]
+        MockProvider["Deterministic Mock Provider"]
+        PlanValidator["Pydantic Plan Validator"]
+        RiskClassifier["Risk Classifier (Read/Low/High)"]
+    end
+
+    subgraph ExecutionEngine ["Safe Execution & Sandbox Layer"]
+        WorkspaceSandbox["Workspace Boundary Validator"]
+        ToolRegistry["Allowlisted Safe Tool Registry"]
+        BackupService["Pre-Execution Snapshot (.lazyloop/backups/)"]
+        VerificationEngine["Deterministic Verifier (SHA-256)"]
+        ReceiptGenerator["Proof-of-Work Receipt Generator"]
+    end
+
+    subgraph Storage ["Local Persistence Layer"]
+        SQLite[(SQLite 3 Database)]
+        DiskStore["Workspace Files & Backup Snapshots"]
+    end
+
+    UI -->|HTTP POST Prompt| TaskRouter
+    TaskRouter --> ModelAdapter
+    ModelAdapter --> OllamaProvider
+    ModelAdapter --> MockProvider
+    ModelAdapter --> PlanValidator
+    PlanValidator --> RiskClassifier
+    RiskClassifier -->|Plan Summary| UI
+
+    UI -->|Approve Action Token| ApprovalRouter
+    ApprovalRouter --> WorkspaceSandbox
+    WorkspaceSandbox --> ToolRegistry
+    ToolRegistry --> BackupService
+    BackupService --> DiskStore
+    ToolRegistry --> VerificationEngine
+    VerificationEngine --> ReceiptGenerator
+    ReceiptGenerator --> SQLite
+    ToolRegistry -->|Event Stream| SSEClient
+```

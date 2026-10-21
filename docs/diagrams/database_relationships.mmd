@@ -1,0 +1,91 @@
+```mermaid
+erDiagram
+    TASKS ||--o{ TASK_STEPS : contains
+    TASKS ||--o{ APPROVALS : requires
+    TASKS ||--o| EXECUTION_RECEIPTS : produces
+    TASKS ||--o{ CHANGE_RECORDS : logs
+    TASKS ||--o{ VERIFICATION_RESULTS : verifies
+
+    TASKS {
+        string id PK
+        string prompt
+        string workspace_path
+        string autonomy_mode
+        string status
+        string model_used
+        float wall_time_ms
+        datetime created_at
+        datetime completed_at
+    }
+
+    TASK_STEPS {
+        string id PK
+        string task_id FK
+        int step_index
+        string tool_name
+        string arguments_json
+        string risk_tier
+        string status
+        string error_message
+    }
+
+    APPROVALS {
+        string id PK
+        string task_id FK
+        string step_id FK
+        string parameter_hash
+        string status
+        datetime approved_at
+    }
+
+    CHANGE_RECORDS {
+        string id PK
+        string task_id FK
+        string original_path
+        string backup_path
+        string original_sha256
+        string action_type
+        datetime recorded_at
+    }
+
+    VERIFICATION_RESULTS {
+        string id PK
+        string task_id FK
+        string step_id FK
+        string target_path
+        string verification_method
+        string expected_value
+        string actual_value
+        boolean passed
+    }
+
+    EXECUTION_RECEIPTS {
+        string id PK
+        string task_id FK
+        string receipt_json
+        float inference_latency_ms
+        float execution_latency_ms
+        float manual_time_avoided_min
+        datetime generated_at
+    }
+
+    ROUTINES ||--o{ ROUTINE_VERSIONS : tracks
+    ROUTINES {
+        string id PK
+        string name
+        string description
+        string current_version
+        boolean is_active
+        datetime created_at
+    }
+
+    ROUTINE_VERSIONS {
+        string id PK
+        string routine_id FK
+        int version_number
+        string plan_template_json
+        string preconditions_json
+        string drift_hash
+        datetime created_at
+    }
+```

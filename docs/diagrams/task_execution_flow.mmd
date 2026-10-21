@@ -1,0 +1,38 @@
+```mermaid
+stateDiagram-v2
+    [*] --> Submitted: User Submits Task & Workspace
+    Submitted --> Planning: Invoking AI / Heuristic Planner
+    Planning --> PlanValidation: Structured JSON Plan Returned
+    PlanValidation --> PlanRejected: Invalid Schema / Bounded Retry Exceeded
+    PlanValidation --> PlanReady: Schema Validated & Risk Tagged
+    PlanRejected --> [*]
+
+    PlanReady --> AutoExecuteRead: Autonomy = SAFE_AUTO & Only Read-Only Steps
+    PlanReady --> AwaitingApproval: Plan Contains Modifications / Autonomy = REVIEW_ALL
+
+    AwaitingApproval --> RejectedByUser: User Rejects Plan
+    RejectedByUser --> [*]
+
+    AwaitingApproval --> Executing: User Approves Action Tokens
+    AutoExecuteRead --> Executing
+
+    state Executing {
+        [*] --> PreconditionCheck
+        PreconditionCheck --> BackupSnapshot: Modifying Tool
+        PreconditionCheck --> RunTool: Read-Only Tool
+        BackupSnapshot --> RunTool
+        RunTool --> DeterministicVerification
+        DeterministicVerification --> [*]
+    }
+
+    Executing --> VerificationPassed: All Postconditions Match Hashes
+    Executing --> PartialFailure: Step Failed / Verification Failed
+
+    VerificationPassed --> ReceiptGenerated: Generate Proof-of-Work Receipt
+    PartialFailure --> ReceiptGenerated: Record Unfinished / Failed Steps
+
+    ReceiptGenerated --> OfferRoutine: Successful Workflow
+    OfferRoutine --> RoutineSaved: User Saves "Routine DNA"
+    OfferRoutine --> [*]
+    RoutineSaved --> [*]
+```
