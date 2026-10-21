@@ -1,30 +1,44 @@
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#FFFFFF',
+    'primaryBorderColor': '#000000',
+    'primaryTextColor': '#000000',
+    'lineColor': '#388BFD',
+    'edgeLabelBackground': '#FFFFFF',
+    'tertiaryColor': '#FAF8F5',
+    'tertiaryBorderColor': '#000000',
+    'fontFamily': 'system-ui, -apple-system, sans-serif',
+    'fontSize': '12.5px'
+  }
+}}%%
 flowchart TD
-    subgraph UntrustedZone ["Untrusted Input Zone"]
+    subgraph UntrustedZone ["🛑 Untrusted Input Zone"]
         UserPrompt["User Natural Language Prompt"]
         RepoFiles["Workspace Untrusted Files & Scripts"]
         RemoteNetwork["External Web (Blocked by Default)"]
     end
 
-    subgraph DefensePerimeter ["Perimeter Defense & Ingestion Controls"]
+    subgraph DefensePerimeter ["🛡️ Perimeter Defense & Ingestion Controls"]
         LoopbackGuard["127.0.0.1 Loopback Host Enforcer"]
         CORSGuard["Strict Origin Filter (localhost:5173)"]
         Sanitizer["Prompt & Path Input Sanitizer"]
     end
 
-    subgraph PlanningBoundary ["Planner Containment Zone"]
+    subgraph PlanningBoundary ["🧠 Planner Containment Zone"]
         ModelRuntime["Ollama / Deterministic Mock"]
         PlanValidator["Strict Pydantic JSON Schema Enforcer"]
         RiskEngine["Static Risk Classifier (Read / Low / Destructive)"]
     end
 
-    subgraph ExecutionBoundary ["Sandboxed Execution Sandbox"]
+    subgraph ExecutionBoundary ["🔒 Sandboxed Execution Sandbox"]
         PathValidator["Workspace Boundary Enforcer (realpath containment)"]
         ApprovalGate["Cryptographic Action Approval Token Gate"]
         ToolAllowlist["Strict Tool Allowlist (No Shell Execution)"]
         BackupEngine["Pre-Execution Snapshot Store (.lazyloop/backups/)"]
     end
 
-    subgraph VerificationZone ["Deterministic Verification & Proof Zone"]
+    subgraph VerificationZone ["📜 Deterministic Verification & Proof Zone"]
         HashEngine["SHA-256 Before/After Content Verifier"]
         DiffEngine["Unified Diff Generator"]
         ReceiptVault["Immutable Proof-of-Work Receipt (SQLite)"]
@@ -47,3 +61,30 @@ flowchart TD
     ToolAllowlist --> HashEngine
     HashEngine --> DiffEngine
     DiffEngine --> ReceiptVault
+
+    %% Custom high-contrast styling for subgraphs
+    style UntrustedZone fill:#FFF1F2,stroke:#FF4D6D,stroke-width:2px,stroke-dasharray: 4 4,color:#000000
+    style DefensePerimeter fill:#FEFCE8,stroke:#CA8A04,stroke-width:2px,color:#000000
+    style PlanningBoundary fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#000000
+    style ExecutionBoundary fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#000000
+    style VerificationZone fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#000000
+
+    %% Node styling with pure black readable text
+    classDef untrustedNode fill:#FFFFFF,stroke:#FF4D6D,stroke-width:2px,color:#000000
+    classDef defenseNode fill:#FFFFFF,stroke:#CA8A04,stroke-width:2px,color:#000000
+    classDef plannerNode fill:#FFFFFF,stroke:#2563EB,stroke-width:2px,color:#000000
+    classDef execNode fill:#FFFFFF,stroke:#16A34A,stroke-width:2px,color:#000000
+    classDef verifyNode fill:#FFFFFF,stroke:#9333EA,stroke-width:2px,color:#000000
+
+    class UserPrompt,RepoFiles,RemoteNetwork untrustedNode
+    class LoopbackGuard,CORSGuard,Sanitizer defenseNode
+    class ModelRuntime,PlanValidator,RiskEngine plannerNode
+    class PathValidator,ApprovalGate,ToolAllowlist,BackupEngine execNode
+    class HashEngine,DiffEngine,ReceiptVault verifyNode
+
+    %% High-contrast edge and arrow styling (visible on dark AND light themes)
+    linkStyle default stroke:#388BFD,stroke-width:2.5px,color:#000000;
+    linkStyle 1 stroke:#FF4D6D,stroke-width:2.5px,stroke-dasharray: 5 5,color:#FF4D6D;
+    linkStyle 7 stroke:#FF9F1C,stroke-width:2.5px,color:#B45309;
+    linkStyle 8 stroke:#10B981,stroke-width:2.5px,color:#047857;
+    linkStyle 9 stroke:#388BFD,stroke-width:2.5px,color:#1D4ED8;

@@ -1,18 +1,32 @@
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#FFFFFF',
+    'primaryBorderColor': '#000000',
+    'primaryTextColor': '#000000',
+    'lineColor': '#388BFD',
+    'edgeLabelBackground': '#FFFFFF',
+    'tertiaryColor': '#FAF8F5',
+    'tertiaryBorderColor': '#000000',
+    'fontFamily': 'system-ui, -apple-system, sans-serif',
+    'fontSize': '12.5px'
+  }
+}}%%
 graph TB
-    subgraph Client ["Client Presentation Layer (React 19 + Vite)"]
+    subgraph Client ["💻 Client Presentation Layer (React 19 + Vite)"]
         UI[User Interface & Dashboard]
         SSEClient[SSE Real-time Event Receiver]
         DiffViewer[Visual Diff & Verification Viewer]
     end
 
-    subgraph API ["Application Server (FastAPI / 127.0.0.1)"]
+    subgraph API ["⚡ Application Server (FastAPI / 127.0.0.1)"]
         TaskRouter["/api/v1/tasks Router"]
         ApprovalRouter["/api/v1/approvals Router"]
         RoutineRouter["/api/v1/routines Router"]
         ModelRouter["/api/v1/models Router"]
     end
 
-    subgraph PlanningEngine ["Planning & Intelligence Layer"]
+    subgraph PlanningEngine ["🧠 Planning & Intelligence Layer"]
         ModelAdapter["Model Adapter Interface"]
         OllamaProvider["Ollama Local Provider"]
         MockProvider["Deterministic Mock Provider"]
@@ -20,7 +34,7 @@ graph TB
         RiskClassifier["Risk Classifier (Read/Low/High)"]
     end
 
-    subgraph ExecutionEngine ["Safe Execution & Sandbox Layer"]
+    subgraph ExecutionEngine ["🔒 Safe Execution & Sandbox Layer"]
         WorkspaceSandbox["Workspace Boundary Validator"]
         ToolRegistry["Allowlisted Safe Tool Registry"]
         BackupService["Pre-Execution Snapshot (.lazyloop/backups/)"]
@@ -28,7 +42,7 @@ graph TB
         ReceiptGenerator["Proof-of-Work Receipt Generator"]
     end
 
-    subgraph Storage ["Local Persistence Layer"]
+    subgraph Storage ["💾 Local Persistence Layer"]
         SQLite[(SQLite 3 Database)]
         DiskStore["Workspace Files & Backup Snapshots"]
     end
@@ -50,3 +64,26 @@ graph TB
     VerificationEngine --> ReceiptGenerator
     ReceiptGenerator --> SQLite
     ToolRegistry -->|Event Stream| SSEClient
+
+    %% Subgraph Layer Tinting
+    style Client fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#000000
+    style API fill:#FEFCE8,stroke:#CA8A04,stroke-width:2px,color:#000000
+    style PlanningEngine fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#000000
+    style ExecutionEngine fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#000000
+    style Storage fill:#FFF7ED,stroke:#EA580C,stroke-width:2px,color:#000000
+
+    %% Node styling with pure black readable text
+    classDef clientNode fill:#FFFFFF,stroke:#2563EB,stroke-width:2px,color:#000000
+    classDef apiNode fill:#FFFFFF,stroke:#CA8A04,stroke-width:2px,color:#000000
+    classDef planNode fill:#FFFFFF,stroke:#9333EA,stroke-width:2px,color:#000000
+    classDef execNode fill:#FFFFFF,stroke:#16A34A,stroke-width:2px,color:#000000
+    classDef storageNode fill:#FFFFFF,stroke:#EA580C,stroke-width:2px,color:#000000
+
+    class UI,SSEClient,DiffViewer clientNode
+    class TaskRouter,ApprovalRouter,RoutineRouter,ModelRouter apiNode
+    class ModelAdapter,OllamaProvider,MockProvider,PlanValidator,RiskClassifier planNode
+    class WorkspaceSandbox,ToolRegistry,BackupService,VerificationEngine,ReceiptGenerator execNode
+    class SQLite,DiskStore storageNode
+
+    %% High-contrast links
+    linkStyle default stroke:#388BFD,stroke-width:2.5px,color:#000000;
